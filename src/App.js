@@ -13,16 +13,11 @@ import PostFilter from './components/PostFilter';
 import MyModal from './components/UI/myModal/MyModal';
 import MyButtonComponent from './components/UI/button/MyButtonComponent';
 import { usePosts } from './hooks/usePost';
-
+import axios from 'axios';
 
 function App() {
 
-  const [posts,setPosts] = useState([
-    {id:1,title:"Title 3",body:"D"},
-    {id:2,title:"Title 2",body:"A"},
-    {id:3,title:"Title 1",body:"C"},
-    {id:4,title:"Title 4",body:"B"},
-  ]);
+  const [posts,setPosts] = useState([]);
 
 
  
@@ -48,6 +43,15 @@ function App() {
   setPosts(posts.filter(p=>p.id !== post.id));
  }
 
+
+ async function fetchPosts(){
+   const response = await axios('https://jsonplaceholder.typicode.com/posts');
+   setPosts(response.data)
+  
+ }
+
+
+
   
   return (
     <div className="App">
@@ -70,7 +74,7 @@ function App() {
 
     </form>
 
-    
+    <button type="button" onClick={ fetchPosts}>Fetch posts</button>
     <MyButtonComponent type="button" onClick={()=>{setModal(true)}}>Add post</MyButtonComponent>
     <MyModal visible={modal} setVisible={setModal}>
 
