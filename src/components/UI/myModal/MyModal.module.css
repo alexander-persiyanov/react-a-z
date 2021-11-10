@@ -1,0 +1,46 @@
+/* .wrapper{
+    position: fixed;
+   width: 100vw;
+   height: 100vh;
+   background-color: gray;
+   opacity: 0.5;
+   left: 0;
+   right: 0;
+   top: 0;
+   bottom: 0;
+   margin: auto;
+   padding: 0;
+  
+   
+} */
+.myModal{
+    position: fixed;
+   
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+   
+    background:rgba(0,0,0, 0.5);
+   
+   
+   
+  
+    display: none;
+  
+}
+.myModalContent{
+    background: white;
+
+    padding: 25px;
+    min-width: 256px;
+    opacity: 1 !important;
+   
+}
+.myModal.active{
+   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+}

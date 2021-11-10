@@ -1,4 +1,4 @@
-import React,{useState,useRef} from 'react';
+import React,{useState,useRef,useMemo} from 'react';
 import ClassCounter from './components/ClassCounter';
 import Counter from './components/Counter';
 
@@ -8,6 +8,10 @@ import PostForm from './components/PostForm';
 // import './App.css';
 import  './styles/App.css'
 import MySelect from './components/UI/mySelect/mySelect';
+import MyInputComponent from './components/UI/input/MyInputComponent';
+import PostFilter from './components/PostFilter';
+import MyModal from './components/UI/myModal/MyModal';
+import MyButtonComponent from './components/UI/button/MyButtonComponent';
 function App() {
 
   const [posts,setPosts] = useState([
@@ -17,16 +21,20 @@ function App() {
     {id:4,title:"Title 4",body:"B"},
   ]);
 
-  const [selectedSort,setSelectedSort] = useState("");
+
  
   
 
   const bodyInputRef = useRef();
   const [valueInputRef,setValueInputRef] = useState('');
+  const [modal,setModal] = useState(false);
+ 
 
+  const [filter,setFilter] = useState({sort:'',query:''});
 
   const createPost = (post)=>{ 
     setPosts([...posts,post]);
+    setModal(false);
 
   };
  
@@ -35,13 +43,34 @@ function App() {
   setPosts(posts.filter(p=>p.id !== post.id));
  }
 
- const sortPosts = (sort)=>{
-    setSelectedSort(sort);
-   
-    //sort doesnt return new array but return same sorted array
-    setPosts( [...posts].sort((a,b)=>{ return a[sort].localeCompare(b[sort]); }) );
+ 
 
- }
+ 
+
+ 
+
+// call this function for only rerender component (when changed state does rerender) 
+ const sortedPosts =  useMemo (()=>{ 
+    console.log("getSortedPosts is done");
+    if(filter.sort){
+      return [...posts].sort((a,b)=>{ return a[filter.sort].localeCompare(b[filter.sort]); });
+    }else{
+      return posts;
+    }
+ },[filter.sort,posts] );
+
+
+
+ const sortedAndSearchedPosts = useMemo(()=>{
+   console.log("sortedAndSearchedPosts");
+   if(filter.query){
+    return sortedPosts.filter(post=> post.title.toUpperCase().includes(filter.query.toUpperCase()));
+   }else{
+    return sortedPosts;
+   }
+   
+ },
+ [filter.query,sortedPosts]);
 
  
   
@@ -60,7 +89,7 @@ function App() {
           ref={bodyInputRef} 
           type="text" 
           placeholder="insert value" 
-          onChange={(e)=>{ sortPosts() }}
+          onChange={(e)=>{ setValueInputRef(e.target.value) }}
         />
       </div>
       <br/>
@@ -68,26 +97,17 @@ function App() {
     </form>
 
     
-       
-    <PostForm create={createPost} ></PostForm>
+    <MyButtonComponent type="button" onClick={()=>{setModal(true)}}>Add post</MyButtonComponent>
+    <MyModal visible={modal} setVisible={setModal}>
+
+          <PostForm create={createPost} ></PostForm>
+      
+    </MyModal>
     <br/>
     <hr/>
     <br/>
-    <MySelect 
-      value={selectedSort}
-      defaultValue="Sort to" 
-      onChange={sortPosts}
-      options={[
-        {name:"title",value:"title"},
-        {name:"body",value:"body"}
-      ]}
-    />
-      
-      
-    <br/>
-    <hr/>
-    <br/>
-    {posts.length !== 0 ? ( <PostList posts={posts} remove={removePost}></PostList>) : (<p style={{textAlign:'center', color:'red'}}><big> Posts not founds</big> </p>)  }
+    <PostFilter filter = {filter} setFilter = {setFilter} ></PostFilter>
+    <PostList posts={sortedAndSearchedPosts} remove={removePost}></PostList>
    
 
 
