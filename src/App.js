@@ -1,4 +1,4 @@
-import React,{useState,useRef,useMemo} from 'react';
+import React,{useState,useRef,useEffect} from 'react';
 import ClassCounter from './components/ClassCounter';
 import Counter from './components/Counter';
 
@@ -7,30 +7,32 @@ import PostForm from './components/PostForm';
 
 // import './App.css';
 import  './styles/App.css'
-import MySelect from './components/UI/mySelect/mySelect';
-import MyInputComponent from './components/UI/input/MyInputComponent';
+
 import PostFilter from './components/PostFilter';
 import MyModal from './components/UI/myModal/MyModal';
 import MyButtonComponent from './components/UI/button/MyButtonComponent';
 import { usePosts } from './hooks/usePost';
-import axios from 'axios';
+
+import postService from './API/postService';
+import Loader from './components/UI/loader/Loader';
 
 function App() {
 
   const [posts,setPosts] = useState([]);
 
-
- 
-  
-
   const bodyInputRef = useRef();
   const [valueInputRef,setValueInputRef] = useState('');
   const [modal,setModal] = useState(false);
- 
-
   const [filter,setFilter] = useState({sort:'',query:''});
-
   const sortedAndSearchedPosts = usePosts(posts,filter.sort,filter.query);
+
+  const [isPostsLoading,setIsPostsLoading] = useState(true);
+
+
+//Mounted component
+  useEffect(()=>{
+    fetchPosts();
+  },[]);
 
   const createPost = (post)=>{ 
     setPosts([...posts,post]);
@@ -45,8 +47,11 @@ function App() {
 
 
  async function fetchPosts(){
-   const response = await axios('https://jsonplaceholder.typicode.com/posts');
-   setPosts(response.data)
+  setIsPostsLoading(true);
+  let posts = await postService.getAll();
+  // console.log(posts)
+   setPosts(posts);
+   setIsPostsLoading(false);
   
  }
 
@@ -74,7 +79,7 @@ function App() {
 
     </form>
 
-    <button type="button" onClick={ fetchPosts}>Fetch posts</button>
+  
     <MyButtonComponent type="button" onClick={()=>{setModal(true)}}>Add post</MyButtonComponent>
     <MyModal visible={modal} setVisible={setModal}>
 
@@ -84,9 +89,12 @@ function App() {
     <br/>
     <hr/>
     <br/>
+
+   
     <PostFilter filter = {filter} setFilter = {setFilter} ></PostFilter>
+    {isPostsLoading ? (<div style={{display:'flex',justifyContent:'center',}}><Loader></Loader></div>) : ( <PostList posts={sortedAndSearchedPosts} remove={removePost}></PostList>)}
     
-    <PostList posts={sortedAndSearchedPosts} remove={removePost}></PostList>
+   
    
    
 
