@@ -12,6 +12,9 @@ import MyInputComponent from './components/UI/input/MyInputComponent';
 import PostFilter from './components/PostFilter';
 import MyModal from './components/UI/myModal/MyModal';
 import MyButtonComponent from './components/UI/button/MyButtonComponent';
+import { usePosts } from './hooks/usePost';
+
+
 function App() {
 
   const [posts,setPosts] = useState([
@@ -32,6 +35,8 @@ function App() {
 
   const [filter,setFilter] = useState({sort:'',query:''});
 
+  const sortedAndSearchedPosts = usePosts(posts,filter.sort,filter.query);
+
   const createPost = (post)=>{ 
     setPosts([...posts,post]);
     setModal(false);
@@ -43,37 +48,6 @@ function App() {
   setPosts(posts.filter(p=>p.id !== post.id));
  }
 
- 
-
- 
-
- 
-
-// call this function for only rerender component (when changed state does rerender) 
- const sortedPosts =  useMemo (()=>{ 
-    console.log("getSortedPosts is done");
-    if(filter.sort){
-      return [...posts].sort((a,b)=>{ return a[filter.sort].localeCompare(b[filter.sort]); });
-    }else{
-      return posts;
-    }
- },[filter.sort,posts] );
-
-
-
- const sortedAndSearchedPosts = useMemo(()=>{
-   console.log("sortedAndSearchedPosts");
-   if(filter.query){
-    return sortedPosts.filter(post=> post.title.toUpperCase().includes(filter.query.toUpperCase()));
-   }else{
-    return sortedPosts;
-   }
-   
- },
- [filter.query,sortedPosts]);
-
- 
-  
   
   return (
     <div className="App">
@@ -107,7 +81,9 @@ function App() {
     <hr/>
     <br/>
     <PostFilter filter = {filter} setFilter = {setFilter} ></PostFilter>
+    
     <PostList posts={sortedAndSearchedPosts} remove={removePost}></PostList>
+   
    
 
 
