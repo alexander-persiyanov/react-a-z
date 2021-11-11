@@ -1,4 +1,4 @@
-import React,{useState,useRef,useEffect} from 'react';
+import React,{useState,useRef,useEffect, useMemo} from 'react';
 import ClassCounter from './components/ClassCounter';
 import Counter from './components/Counter';
 
@@ -12,9 +12,14 @@ import PostFilter from './components/PostFilter';
 import MyModal from './components/UI/myModal/MyModal';
 import MyButtonComponent from './components/UI/button/MyButtonComponent';
 import { usePosts } from './hooks/usePost';
+import { useFetching } from './hooks/useFetching';
 
 import postService from './API/postService';
 import Loader from './components/UI/loader/Loader';
+
+import {getPageCount} from './utils/pages';
+// import { useGetPaginationArr } from './hooks/usePagination';
+import Pagination from './components/UI/pagination/Pagination';
 
 function App() {
 
@@ -26,13 +31,34 @@ function App() {
   const [filter,setFilter] = useState({sort:'',query:''});
   const sortedAndSearchedPosts = usePosts(posts,filter.sort,filter.query);
 
-  const [isPostsLoading,setIsPostsLoading] = useState(true);
+  const [totalPage,setTotalPage] = useState(0);
+  const [limitPosts,setLimitPosts] = useState(5);
+  const [page,setPage] = useState(1);
+
+  
+
+  const [fetchPosts,isPostsLoading,postError] = useFetching( async ()=>{
+    
+    const  response = await postService.getAll(limitPosts,page);
+   
+    setPosts(response.data);
+    let totalCount = response.headers['x-total-count'];
+    setTotalPage(getPageCount(totalCount,limitPosts));
+
+  });
+
+
+
+  
+
+
+
 
 
 //Mounted component
   useEffect(()=>{
     fetchPosts();
-  },[]);
+  },[page]);
 
   const createPost = (post)=>{ 
     setPosts([...posts,post]);
@@ -45,17 +71,10 @@ function App() {
   setPosts(posts.filter(p=>p.id !== post.id));
  }
 
-
- async function fetchPosts(){
-  setIsPostsLoading(true);
-  let posts = await postService.getAll();
-  // console.log(posts)
-   setPosts(posts);
-   setIsPostsLoading(false);
-  
+ const changePage = (page)=>{
+  setPage(page);
+  // fetchPosts();
  }
-
-
 
   
   return (
@@ -92,8 +111,10 @@ function App() {
 
    
     <PostFilter filter = {filter} setFilter = {setFilter} ></PostFilter>
+    {postError ? (<div>{postError}</div>):''}
     {isPostsLoading ? (<div style={{display:'flex',justifyContent:'center',}}><Loader></Loader></div>) : ( <PostList posts={sortedAndSearchedPosts} remove={removePost}></PostList>)}
     
+    <Pagination totalPage={totalPage} currentPage={page} changePage={changePage}></Pagination>
    
    
    

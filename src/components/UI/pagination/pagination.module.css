@@ -1,0 +1,30 @@
+.pagination{
+    display: flex;
+    margin: 20px auto;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+}
+.pagination > .item{
+    text-align: center;
+    border: 1px solid teal;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+}
+.item:hover{
+   cursor: pointer;
+   background-color: teal;
+   color: white;
+   opacity: 0.5;
+}
+.item.active{
+    background-color: teal;
+   color: white;
+
+}
+.item.active:hover{
+    opacity: 1;
+
+}
