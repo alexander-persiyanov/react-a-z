@@ -1,129 +1,47 @@
-import React,{useState,useRef,useEffect, useMemo} from 'react';
-import ClassCounter from './components/ClassCounter';
-import Counter from './components/Counter';
+import React from 'react';
+import {BrowserRouter,Route,Routes,Navigate} from 'react-router-dom';
+import LayoutMain from './components/layout/LayoutMain';
+import PostItemInfo from './components/PostItemInfo';
+import Navbar from './components/UI/navbar/Navbar';
 
-import PostList from './components/PostList';
-import PostForm from './components/PostForm';
-
-// import './App.css';
 import  './styles/App.css'
+import About from './views/about';
+import Home from './views/home';
+import NotFoundPage from './views/notFoundPage';
+import Posts from './views/posts';
 
-import PostFilter from './components/PostFilter';
-import MyModal from './components/UI/myModal/MyModal';
-import MyButtonComponent from './components/UI/button/MyButtonComponent';
-import { usePosts } from './hooks/usePost';
-import { useFetching } from './hooks/useFetching';
 
-import postService from './API/postService';
-import Loader from './components/UI/loader/Loader';
-
-import {getPageCount} from './utils/pages';
-// import { useGetPaginationArr } from './hooks/usePagination';
-import Pagination from './components/UI/pagination/Pagination';
 
 function App() {
 
-  const [posts,setPosts] = useState([]);
-
-  const bodyInputRef = useRef();
-  const [valueInputRef,setValueInputRef] = useState('');
-  const [modal,setModal] = useState(false);
-  const [filter,setFilter] = useState({sort:'',query:''});
-  const sortedAndSearchedPosts = usePosts(posts,filter.sort,filter.query);
-
-  const [totalPage,setTotalPage] = useState(0);
-  const [limitPosts,setLimitPosts] = useState(5);
-  const [page,setPage] = useState(1);
-
-  
-
-  const [fetchPosts,isPostsLoading,postError] = useFetching( async ()=>{
-    
-    const  response = await postService.getAll(limitPosts,page);
-   
-    setPosts(response.data);
-    let totalCount = response.headers['x-total-count'];
-    setTotalPage(getPageCount(totalCount,limitPosts));
-
-  });
-
-
-
-  
-
-
-
-
-
-//Mounted component
-  useEffect(()=>{
-    fetchPosts();
-  },[page]);
-
-  const createPost = (post)=>{ 
-    setPosts([...posts,post]);
-    setModal(false);
-
-  };
- 
- const removePost = (post)=>{
-  
-  setPosts(posts.filter(p=>p.id !== post.id));
- }
-
- const changePage = (page)=>{
-  setPage(page);
-  // fetchPosts();
- }
-
-  
   return (
     <div className="App">
-    <Counter/>
-    <ClassCounter/>
-    <br/>
-    
-    <form>
-      <div>
-        <p><strong> Value From Input with useRef:</strong> {valueInputRef}</p>  
+      
+     
+      <BrowserRouter>
        
-        <input 
-          ref={bodyInputRef} 
-          type="text" 
-          placeholder="insert value" 
-          onChange={(e)=>{ setValueInputRef(e.target.value) }}
-        />
-      </div>
-      <br/>
-
-    </form>
-
-  
-    <MyButtonComponent type="button" onClick={()=>{setModal(true)}}>Add post</MyButtonComponent>
-    <MyModal visible={modal} setVisible={setModal}>
-
-          <PostForm create={createPost} ></PostForm>
-      
-    </MyModal>
-    <br/>
-    <hr/>
-    <br/>
-
-   
-    <PostFilter filter = {filter} setFilter = {setFilter} ></PostFilter>
-    {postError ? (<div>{postError}</div>):''}
-    {isPostsLoading ? (<div style={{display:'flex',justifyContent:'center',}}><Loader></Loader></div>) : ( <PostList posts={sortedAndSearchedPosts} remove={removePost}></PostList>)}
-    
-    <Pagination totalPage={totalPage} currentPage={page} changePage={changePage}></Pagination>
-   
-   
-   
-
-
-      
        
+          <Routes>
+          <Route path="/" element={<LayoutMain />} >
+            <Route index element={<Home></Home>} />
+            <Route path="posts" element={<Posts />} >
+             
+            </Route>
+            <Route path="posts/:id" element={<PostItemInfo/>} />
+          
+            <Route path="about" element={<About />} />
+          
+            <Route path="" element={<Navigate replace to="/" />} />
+            <Route path="*" element={<NotFoundPage></NotFoundPage>} />
+             
+          </Route>
+           
+            
+          
+          </Routes>
+        
+    </BrowserRouter>
       
-
    </div>
   );
 }

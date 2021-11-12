@@ -1,7 +1,7 @@
 import  { useGetPaginationArr } from '../../../hooks/usePagination';
 import cl from './pagination.module.css';
 
-const Pagination = ({totalPage,page,changePage})=>{
+const Pagination = ({totalPage,currentPage,changePage})=>{
    
     const paginationArr = useGetPaginationArr(totalPage);
 
@@ -15,7 +15,7 @@ const Pagination = ({totalPage,page,changePage})=>{
                 return(
 
                 <div 
-                    className= { cl.item + ' ' + (  p===page ? cl.active : '' ) } 
+                    className= { cl.item + ' ' + (  p==currentPage ? cl.active : '' ) } 
                    
                     key={p}
                     onClick={()=>{changePage(p)}}
