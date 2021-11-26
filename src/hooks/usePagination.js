@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 
 export const useGetPaginationArr = (totalPage)=>{
-        
+      
      const arr = useMemo(()=>{
         let arr = [];
         if(totalPage>0){

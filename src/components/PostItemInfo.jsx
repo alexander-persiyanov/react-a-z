@@ -28,9 +28,9 @@ const PostItemInfo = ()=>{
         fetchPostById();
         fetchCommentsById();
     },[])
-   console.log(comments);
+   console.log(commError);
     return( <div className="post_item_info">
-        {error   ?  (<div>error.message</div>):''}
+        {error   ?  (<div>{error}</div>):''}
        
         {isLoading && isCommLoading ?  (<Loader></Loader>) : (
            
@@ -43,14 +43,14 @@ const PostItemInfo = ()=>{
                 </div>
                 
         ) }
-        {commError  ?  (<div>commError.message</div>):''}
+        {commError  ?  (<div>{commError}</div>):''}
 
         {isCommLoading ?  (<Loader></Loader>) : (
           
             <div className="comments">
                 <h2>Comments</h2>
-                {comments.map(comment=>{return(
-                    <div className="comment-item">
+                {comments.map((comment)=>{return(
+                    <div className="comment-item" key={comment.id}>
                        
                         <div>
                             <div>Post id : {comment.postId}</div>
