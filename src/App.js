@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {BrowserRouter,Route,Routes,Navigate} from 'react-router-dom';
+import {BrowserRouter,Route,Routes,Navigate, HashRouter} from 'react-router-dom';
 import LayoutMain from './components/layout/LayoutMain';
 import PostItemInfo from './components/PostItemInfo';
 import PrivateRoute from './components/PrivateRoute';
@@ -35,8 +35,8 @@ function App() {
     <div className="App">
       {isAuth ? "isAuth":'---' }
       <AuthContext.Provider value={{isAuth,setIsAuth}}>
-       
-        <BrowserRouter basename={process.env.PUBLIC_URL }>
+       <HashRouter>
+        {/* <BrowserRouter basename={process.env.PUBLIC_URL }> */}
         
         
             <Routes>
@@ -62,7 +62,8 @@ function App() {
             
             </Routes>
           
-      </BrowserRouter>
+      {/* </BrowserRouter> */}
+      </HashRouter>
     </AuthContext.Provider>     
       
    </div>
