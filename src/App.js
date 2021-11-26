@@ -36,7 +36,7 @@ function App() {
       {isAuth ? "isAuth":'---' }
       <AuthContext.Provider value={{isAuth,setIsAuth}}>
        
-        <BrowserRouter>
+        <BrowserRouter >
         
         
             <Routes>
