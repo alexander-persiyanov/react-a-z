@@ -36,7 +36,7 @@ function App() {
       {isAuth ? "isAuth":'---' }
       <AuthContext.Provider value={{isAuth,setIsAuth}}>
        
-        <BrowserRouter >
+        <BrowserRouter basename={process.env.PUBLIC_URL }>
         
         
             <Routes>
